@@ -16,4 +16,3 @@ setup-env.sh
 node_modules/
 .fable
 src/Client/.build
-.build/
