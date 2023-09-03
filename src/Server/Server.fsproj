@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+      <OutputType>Exe</OutputType>
+      <TargetFramework>net7.0</TargetFramework>
+      <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+      <RestoreLockedMode>true</RestoreLockedMode>
+      <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+      <!-- https://www.gresearch.co.uk/blog/article/improve-nuget-restores-with-static-graph-evaluation/ -->
+      <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
+      <ServerGarbageCollection>true</ServerGarbageCollection>
+      <OtherFlags>$(OtherFlags) --test:GraphBasedChecking --test:ParallelOptimization --test:ParallelIlxGen</OtherFlags>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="../Shared/Shared.fsi" />
+      <Compile Include="../Shared/Shared.fs" />
+      <Compile Include="Settings.fsi" />
+      <Compile Include="Settings.fs" />
+      <Compile Include="Server.fsi" />
+      <Compile Include="Server.fs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="FSharpPlus" Version="1.4.1" />
+      <PackageReference Include="Giraffe" Version="6.2.0" />
+      <PackageReference Include="Giraffe.SerilogExtensions" Version="2.2.0" />
+      <PackageReference Include="Saturn" Version="0.16.1" />
+      <PackageReference Include="Fable.Remoting.Giraffe" Version="5.14.0" />
+      <PackageReference Include="Serilog" Version="3.0.1" />
+      <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+      <PackageReference Include="Thoth.Json.Giraffe" Version="6.0.0" />
+      <PackageReference Include="Thoth.Json.Net" Version="11.0.0" />
+    </ItemGroup>
+</Project>

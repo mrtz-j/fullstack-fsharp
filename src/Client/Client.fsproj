@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>net7.0</TargetFramework>
+      <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <Content Include="index.html" />
+      <Compile Include="../Shared/Shared.fs" />
+      <Compile Include="App.fsi" />
+      <Compile Include="App.fs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Fable.Core" Version="4.0.0" />
+      <PackageReference Include="Fable.Remoting.Client" Version="7.25.0" />
+      <PackageReference Include="Feliz" Version="2.6.0" />
+      <PackageReference Include="Feliz.Router" Version="4.0.0" />
+      <PackageReference Include="FS.FluentUI" Version="0.0.1-beta04" />
+    </ItemGroup>
+</Project>
