@@ -24,7 +24,7 @@
       <PackageReference Include="Giraffe" Version="6.2.0" />
       <PackageReference Include="Giraffe.SerilogExtensions" Version="2.2.0" />
       <PackageReference Include="Saturn" Version="0.16.1" />
-      <PackageReference Include="Fable.Remoting.Giraffe" Version="5.14.0" />
+      <PackageReference Include="Fable.Remoting.Giraffe" Version="5.15.0" />
       <PackageReference Include="Serilog" Version="3.0.1" />
       <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
       <PackageReference Include="Thoth.Json.Giraffe" Version="6.0.0" />

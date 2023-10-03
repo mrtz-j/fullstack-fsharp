@@ -3,6 +3,7 @@ module App
 open Feliz
 open Fable.Remoting.Client
 open FS.FluentUI
+
 open Shared
 
 let serverApi: IServerApi =
@@ -10,14 +11,24 @@ let serverApi: IServerApi =
   |> Remoting.withBaseUrl "/api"
   |> Remoting.buildProxy<IServerApi>
 
+let fetchHello () =
+   async {
+       let! hello = serverApi.GetValue()
+       printfn $"%s{hello}"
+   }
+   |> Async.StartImmediate
+
 [<ReactComponent>]
 let Counter() =
+    fetchHello ()
+
     let count, setCount = React.useState(0)
+
     Html.div [
       prop.children [
           Fui.text [
             text.as'.h2
-            text.text "Simple Counter"
+            text.text $"Simple Counter"
           ]
           Html.div [
             prop.style [

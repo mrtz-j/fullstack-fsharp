@@ -71,7 +71,7 @@ Target.create "Pack" (fun _ ->
 )
 
 Target.create "Format" (fun _ ->
-    run dotnet "fantomas . -r" "src"
+    run dotnet "fantomas ./src/Server" "."
 )
 
 // if any test folders run tests

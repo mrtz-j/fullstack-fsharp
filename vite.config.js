@@ -8,7 +8,7 @@ const vendorDeps = ['react', 'react-dom']
 const chunksFromDeps = (deps, vendorDeps) => {
   const chunks = {}
   Object.keys(deps).forEach((key) => {
-    if (vendorDeps.includes(key) || key.startsWith('@mui')) {
+    if (vendorDeps.includes(key) || key.startsWith('@fluetnui')) {
       return
     }
     chunks[key] = [key]

@@ -3,14 +3,14 @@ module Settings
 open System.IO
 open Thoth.Json.Net
 
-type Settings = { Setting: string }
+type Settings = {Setting: string}
 
 let tryGetEnv =
     System.Environment.GetEnvironmentVariable
     >> function
-    | null
-    | "" -> None
-    | x -> Some x
+        | null
+        | "" -> None
+        | x -> Some x
 
 let appsettings =
     let settings = File.ReadAllText "appsettings.json"
@@ -31,7 +31,7 @@ let webRoot =
     tryGetEnv "SERVER_WEB_ROOT"
     |> function
         | Some root -> Path.GetFullPath root
-        | None -> Path.Join [| contentRoot; "public" |]
+        | None -> Path.Join [|contentRoot; "public"|]
 
 let port =
     "SERVER_PORT"
@@ -47,6 +47,6 @@ let useSSL =
 
 let listenAddress =
     if useSSL then
-        "https://0.0.0.0:" + port.ToString()
+        "https://0.0.0.0:" + port.ToString ()
     else
-        "http://0.0.0.0:" + port.ToString()
+        "http://0.0.0.0:" + port.ToString ()

@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Moritz Jörg",
+    "classifications": [
+        "fsharp",
+        "F#",
+        "Fable",
+        "React"
+    ],
+    "identity": "fsharp-fable-fullstack-template",
+    "name": "Fshap Fable Fullstack Template",
+    "shortName": "fffl",
+    "tags": {
+        "language": "F#",
+        "type": "solution"
+    },
+    "sourceName": "Fullstack",
+    "preferNameDirectory": true,
+    "sources": [
+        {
+            "modifiers": [
+                {
+                    "exclude": [
+                        "**/[Bb]in/**",
+                        "**/[Oo]bj/**",
+                        ".template.config/**/*",
+                        ".vs/**/*",
+                        "**/*.filelist",
+                        "**/*.user",
+                        "**/*.lock.json",
+                        "**/pnpm-lock.json",
+                        "**/node_modules/**/*",
+                        "**/dist/**/*",
+                        "./src/Client/.build/**/*",
+                        "**/Server/build/**/*",
+                        "**/docs/**/*",
+                        "**/.nuspec",
+                        "**/run_pack.cmd"
+                    ]
+                }
+            ]
+        }
+    ]
+}

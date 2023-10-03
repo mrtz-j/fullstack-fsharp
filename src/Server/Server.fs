@@ -20,36 +20,37 @@ let rec private unwrapEx (ex: Exception) =
         printfn $"Parent Ex: %s{ex.Message}"
         printfn "Unwrapping inner exception..."
         unwrapEx ex.InnerException
-    else ex
+    else
+        ex
 
 let fableRemotingErrorHandler (ex: Exception) (ri: RouteInfo<HttpContext>) =
-    let logger = ri.httpContext.GetLogger()
+    let logger = ri.httpContext.GetLogger ()
     logger.LogError $"Error at %s{ri.path} on method %s{ri.methodName}"
     // Decide whether or not you want to propagate the error to the client
     let ex = unwrapEx ex
     logger.LogError $"Error: %s{ex.Message}"
     Propagate "An error occurred while processing the request."
 
-let helloWorld () = async { return "Hello From Saturn!" }
+let helloWorld () = async {return "Hello From Saturn!"}
 
-let serverApi: IServerApi = { GetValue = helloWorld }
+let serverApi: IServerApi = {GetValue = helloWorld}
 
 let routeBuilder (typeName: string) (methodName: string) =
-  $"/api/%s{typeName}/%s{methodName}"
+    $"/api/%s{typeName}/%s{methodName}"
 
 let serverApiHandler: HttpHandler =
-  Remoting.createApi ()
-  |> Remoting.withRouteBuilder routeBuilder
-  |> Remoting.fromValue serverApi
-  |> Remoting.withErrorHandler fableRemotingErrorHandler
-  |> Remoting.buildHttpHandler
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder routeBuilder
+    |> Remoting.fromValue serverApi
+    |> Remoting.withErrorHandler fableRemotingErrorHandler
+    |> Remoting.buildHttpHandler
 
 let webApp =
-  choose [
-    serverApiHandler
+    choose [
+        serverApiHandler
 
-    GET >=> routeCi "/api/ping" >=> text "pong"
-  ]
+        GET >=> routeCi "/api/ping" >=> text "pong"
+    ]
 
 // Configure Serilog to write to console at minimum info level, silence microsoft and system related logs
 let configureSerilog () =
@@ -60,42 +61,42 @@ let configureSerilog () =
         .MinimumLevel.Override("System", Events.LogEventLevel.Warning)
         .MinimumLevel.Override("HealthChecks", Events.LogEventLevel.Warning)
         .WriteTo.Console()
-        .CreateLogger()
+        .CreateLogger ()
 
 let configureServices (services: IServiceCollection) =
-    services.AddHealthChecks() |> ignore
+    services.AddHealthChecks () |> ignore
 
 let configureApp (app: IApplicationBuilder) =
-    app.UseHealthChecks(PathString "/health")
+    app.UseHealthChecks (PathString "/health")
 
 let configureLogger (logger: ILoggingBuilder) =
-   logger
-       .SetMinimumLevel(LogLevel.Debug)
-       .AddFilter("Microsoft", LogLevel.Warning)
-       .AddFilter("System", LogLevel.Warning)
-       .AddSerilog()
-   |> ignore
+    logger
+        .SetMinimumLevel(LogLevel.Debug)
+        .AddFilter("Microsoft", LogLevel.Warning)
+        .AddFilter("System", LogLevel.Warning)
+        .AddSerilog ()
+    |> ignore
 
 let configureHost (host: IHostBuilder) =
-    host.ConfigureServices(configureServices)
+    host.ConfigureServices (configureServices)
 
 let app ipPort =
-  application {
-    url ipPort
-    use_router webApp
-    memory_cache
-    use_static "public"
-    use_json_serializer (Thoth.Json.Giraffe.ThothSerializer())
-    use_gzip
+    application {
+        url ipPort
+        use_router webApp
+        memory_cache
+        use_static "public"
+        use_json_serializer (Thoth.Json.Giraffe.ThothSerializer ())
+        use_gzip
 
-    app_config configureApp
-    host_config configureHost
-    logging configureLogger
-  }
+        app_config configureApp
+        host_config configureHost
+        logging configureLogger
+    }
 
 [<EntryPoint>]
 let main _ =
-    Log.Logger <- configureSerilog()
+    Log.Logger <- configureSerilog ()
 
     Log.Information "-----------------------------------------"
     Log.Information $"Port: {Settings.port}"

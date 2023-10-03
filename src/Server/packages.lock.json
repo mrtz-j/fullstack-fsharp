@@ -4,12 +4,12 @@
     "net7.0": {
       "Fable.Remoting.Giraffe": {
         "type": "Direct",
-        "requested": "[5.14.0, )",
-        "resolved": "5.14.0",
-        "contentHash": "85y3FY2arrrmuxHNjECW0kXyi+ejYjFYycdv7XUvhxjZ4Olfy2RsQBVrEw+EyXQOeHMlFPutPq2yuw2j/9UXpA==",
+        "requested": "[5.15.0, )",
+        "resolved": "5.15.0",
+        "contentHash": "lGRMXBq31NWcUR+ZZhhPyQ7uR4WZF8veUIHDkR1pnciR+w3kJn0nUXypObiZ5b2MvSC94WnF4Z6fUMuHL/6Tuw==",
         "dependencies": {
           "FSharp.Core": "6.0.0",
-          "Fable.Remoting.Server": "5.32.0",
+          "Fable.Remoting.Server": "5.33.0",
           "Giraffe": "5.0.0",
           "Microsoft.IO.RecyclableMemoryStream": "2.2.0"
         }
@@ -121,29 +121,29 @@
       },
       "Fable.Remoting.Json": {
         "type": "Transitive",
-        "resolved": "2.21.0",
-        "contentHash": "QLgVKeYGn2oQwQCE+WWXfzDdPVhwLI+sSn7zzDdJ0XWrooyg9yl90T1c8dkCmps3kRmZxc3R0luT3LEXRz7RFQ==",
+        "resolved": "2.23.0",
+        "contentHash": "yYzx5mLG6iF0nNjp5sN8DjYx4ASGo3q8XFyc9FbjVOoxkXvqx1dw8Q6ANf+P4u/XhmijSPPgjzspIpW+0QW7RA==",
         "dependencies": {
-          "FSharp.Core": "4.7.2",
+          "FSharp.Core": "6.0.0",
           "Newtonsoft.Json": "12.0.2"
         }
       },
       "Fable.Remoting.MsgPack": {
         "type": "Transitive",
-        "resolved": "1.18.0",
-        "contentHash": "eka+x1gSWGkf48/gM/A/Figomsn4Oaa2OWARz9sFvW77cx254fdVfwv17+hvmUDSMlsjVNNy610YtZYjT15WWA==",
+        "resolved": "1.19.0",
+        "contentHash": "Th8dY8+gVVzeLvcT7V0jq+BzhQWX2fHFg6GCOGTxO+DLxL7MqbL4Cnrvm5cLHBAk17DkY8FpOUM87AN2FMRJnA==",
         "dependencies": {
-          "FSharp.Core": "4.7.2"
+          "FSharp.Core": "6.0.0"
         }
       },
       "Fable.Remoting.Server": {
         "type": "Transitive",
-        "resolved": "5.32.0",
-        "contentHash": "28atNZwvxzzxdcMcIKrOckz7m68iFCmW8/ioTm+hSX188uRmSbJ5IRlg94c1XGaSOUHPY7HKEzZDUrwglyrB7w==",
+        "resolved": "5.33.0",
+        "contentHash": "RT5WOTd+VAn2bSB0/nznnpJ8HvErLfkqhOHFKItkmJ87LPaJVBQCrnO3h7UVWRBuGT1AgKdemkUXSf7uO9EoTQ==",
         "dependencies": {
           "FSharp.Core": "6.0.0",
-          "Fable.Remoting.Json": "2.21.0",
-          "Fable.Remoting.MsgPack": "1.18.0",
+          "Fable.Remoting.Json": "2.23.0",
+          "Fable.Remoting.MsgPack": "1.19.0",
           "Microsoft.IO.RecyclableMemoryStream": "2.2.0"
         }
       },

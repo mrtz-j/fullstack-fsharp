@@ -4,20 +4,20 @@
     "net7.0": {
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[4.0.0, )",
-        "resolved": "4.0.0",
-        "contentHash": "crDLkyN4xADgnCqIneMUGVDo2oS92W4oufbIH/jwc8Fk7nIH6pS/Ds1rBB4R1jUfU1WM1k9GEPa4Up8cNj5VYw=="
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
       "Fable.Remoting.Client": {
         "type": "Direct",
-        "requested": "[7.25.0, )",
-        "resolved": "7.25.0",
-        "contentHash": "USfzw/oyNcRC9WMb4BtPF0ZBahObBXGdOcdMndV91hO630DPiCY5mOzlCnxIe7iMNfeZ+tHNL1Tnp0R++3f0zw==",
+        "requested": "[7.26.0, )",
+        "resolved": "7.26.0",
+        "contentHash": "4XQo0DWkSWLRVUDwXHBjSBcH7YVlpfyV2ZOUxvULQGOUnL1Oo/JXqtUe+r12ugYlTlXkCnKD/wrJDxgCWrhuLw==",
         "dependencies": {
           "FSharp.Core": "4.7.2",
           "Fable.Browser.XMLHttpRequest": "1.0.0",
           "Fable.Core": "3.1.5",
-          "Fable.Remoting.MsgPack": "1.18.0",
+          "Fable.Remoting.MsgPack": "1.19.0",
           "Fable.SimpleJson": "3.24.0"
         }
       },
@@ -45,11 +45,11 @@
       },
       "FS.FluentUI": {
         "type": "Direct",
-        "requested": "[0.0.1-beta04, )",
-        "resolved": "0.0.1-beta04",
-        "contentHash": "EwGvcZxKEs1O/yyFTIoiTbDcaFxW+gtOv5s5Wa7cRBav4kpVKV7tJojCRod0lZAGfrTb4zmVWfGj/Msp36sH1w==",
+        "requested": "[1.0.1, )",
+        "resolved": "1.0.1",
+        "contentHash": "riac7Y8SY+fM0ruiAC6aNWoF+lf3xqrzYRDNWgR4y4lsaCFLos+iP9PYtJfxjvMnZuQE36MFRiG/EiQAdUNpAg==",
         "dependencies": {
-          "FSharp.Core": "4.7.2",
+          "FSharp.Core": "6.0.1",
           "Feliz": "2.6.0"
         }
       },
@@ -163,10 +163,10 @@
       },
       "Fable.Remoting.MsgPack": {
         "type": "Transitive",
-        "resolved": "1.18.0",
-        "contentHash": "eka+x1gSWGkf48/gM/A/Figomsn4Oaa2OWARz9sFvW77cx254fdVfwv17+hvmUDSMlsjVNNy610YtZYjT15WWA==",
+        "resolved": "1.19.0",
+        "contentHash": "Th8dY8+gVVzeLvcT7V0jq+BzhQWX2fHFg6GCOGTxO+DLxL7MqbL4Cnrvm5cLHBAk17DkY8FpOUM87AN2FMRJnA==",
         "dependencies": {
-          "FSharp.Core": "4.7.2"
+          "FSharp.Core": "6.0.0"
         }
       },
       "Fable.SimpleJson": {
