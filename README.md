@@ -55,3 +55,8 @@ To build the server and client in release mode use the following command:
 ```bash
 dotnet run bundle
 ```
+
+## Nix 
+
+This template also includes a [Nix](https://nixos.org/) shell file with [direnv](https://direnv.net/) for development.
+To use it, simply run `direnv allow` in the root of the project. This will install all the dependencies and set up the environment for you.

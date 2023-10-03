@@ -53,12 +53,6 @@
           "Feliz": "2.6.0"
         }
       },
-      "FSharp.Core": {
-        "type": "Direct",
-        "requested": "[7.0.400, )",
-        "resolved": "7.0.400",
-        "contentHash": "kJQ7TBQqd1d2VoODSgwFSAaApaBN0Fuu8mZt2XExmd3UzUxLjUsMn5Y5XhpsUWdnxOL8amp7VFg7cwhPllR4Qw=="
-      },
       "Fable.AST": {
         "type": "Transitive",
         "resolved": "4.2.1",
@@ -187,6 +181,11 @@
           "FSharp.Core": "4.7.2",
           "Fable.AST": "4.2.1"
         }
+      },
+      "FSharp.Core": {
+        "type": "Transitive",
+        "resolved": "6.0.1",
+        "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
       }
     }
   }

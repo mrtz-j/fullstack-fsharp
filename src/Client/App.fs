@@ -65,7 +65,16 @@ let Counter() =
         ]
     ]
 
+[<ReactComponent>]
+let App () =
+    Fui.fluentProvider [
+        fluentProvider.theme.webDarkTheme
+        fluentProvider.children [
+            Counter()
+        ]
+    ]
+
 open Browser.Dom
 
 let root = ReactDOM.createRoot(document.getElementById "root")
-root.render(Counter())
+root.render(App())
