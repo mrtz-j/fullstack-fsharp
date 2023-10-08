@@ -38,11 +38,21 @@ let serverApi: IServerApi = {GetValue = helloWorld}
 let routeBuilder (typeName: string) (methodName: string) =
     $"/api/%s{typeName}/%s{methodName}"
 
+let docs = Docs.createFor<IServerApi>()
+let serverApiDocs =
+    Remoting.documentation "Server Api"
+        [
+            docs.route <@ fun (api: IServerApi) -> api.GetValue @>
+            |> docs.alias "Get a Value"
+            |> docs.description "Returns a value set on the backend"
+        ]
+
 let serverApiHandler: HttpHandler =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder routeBuilder
     |> Remoting.fromValue serverApi
     |> Remoting.withErrorHandler fableRemotingErrorHandler
+    |> Remoting.withDocs "/api/docs" serverApiDocs
     |> Remoting.buildHttpHandler
 
 let webApp =

@@ -32,7 +32,7 @@ export default defineConfig({
   clearScreen: false,
   publicDir: "./src/Client/public",
   build: {
-    outDir: "./deploy/public",
+    outDir: resolve(__dirname, "./dist/public"),
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
@@ -44,8 +44,8 @@ export default defineConfig({
           vendor: vendorDeps,
           ...chunksFromDeps(dependencies, vendorDeps)
         },
-        entryFileNames: 'js/main.min.js',
-        chunkFileNames: 'js/[name].min.js',
+        entryFileNames: 'js/[name].js',
+        chunkFileNames: 'js/[name].chunk.js',
         assetFileNames: '[ext]/[name].[ext]'
       },
     }

@@ -17,17 +17,14 @@ let libPath    = None
 
 /// The path to the directories
 let publicPath       = Path.getFullName "src/Client/public"
-let deployDir        = Path.getFullName "deploy"
-let publicDeployDir  = Path.getFullName "deploy/public"
+let deployDir        = Path.getFullName "dist"
+let publicDeployDir  = Path.getFullName "dist/public"
 let packPath         = Path.getFullName "packages"
 let versionFile      = Path.getFullName ".version"
 
 // Run cleanup
 Target.create "Clean" (fun _ ->
   Shell.cleanDir deployDir
-  Shell.mkdir publicDeployDir
-  Shell.copyRecursive publicPath publicDeployDir false
-  |> ignore
 )
 
 // Restore dotnet tools, if
@@ -45,7 +42,6 @@ Target.create "Bundle" (fun _ ->
     |> runParallel
 )
 
-
 // Start process which publishes the server project into binaries for debug
 Target.create "BundleDebug" (fun _ ->
     [
@@ -62,6 +58,10 @@ Target.create "Run" (fun _ ->
       "client", dotnet "fable watch -s -o .build --run vite -c ../../vite.config.js" clientPath
     ]
     |> runParallel
+)
+
+Target.create "Client" (fun _ ->
+    run dotnet "fable watch -s -o .build --run vite -c ../../vite.config.js" clientPath
 )
 
 Target.create "Pack" (fun _ ->
@@ -91,6 +91,8 @@ let dependencies = [
     "Clean" ==> "Test"
 
     "Clean" ==> "InstallClient" ==> "Run"
+
+    "Clean" ==> "InstallClient" ==> "Client"
 
     "Clean" ==> "Format"
 
