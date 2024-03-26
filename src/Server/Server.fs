@@ -1,117 +1,259 @@
 module Server
 
 open System
-open Saturn
-open Giraffe
-open Fable.Remoting.Server
-open Fable.Remoting.Giraffe
+open System.IO
+open System.Text.Json
+open System.Text.Json.Serialization
+open System.Threading.Tasks
+open Oxpecker
+open Thoth.Json.Oxpecker
+open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
-open Giraffe.SerilogExtensions
+open Microsoft.Extensions.FileProviders
+open Microsoft.OpenApi.Models
+open OpenTelemetry
+open OpenTelemetry.Metrics
 open Serilog
 
 open Shared
 
-let rec private unwrapEx (ex: Exception) =
-    if not (isNull ex.InnerException) then
-        printfn $"Parent Ex: %s{ex.Message}"
-        printfn "Unwrapping inner exception..."
-        unwrapEx ex.InnerException
-    else
-        ex
+module Storage =
+    let todos = ResizeArray()
 
-let fableRemotingErrorHandler (ex: Exception) (ri: RouteInfo<HttpContext>) =
-    let logger = ri.httpContext.GetLogger ()
-    logger.LogError $"Error at %s{ri.path} on method %s{ri.methodName}"
-    // Decide whether or not you want to propagate the error to the client
-    let ex = unwrapEx ex
-    logger.LogError $"Error: %s{ex.Message}"
-    Propagate "An error occurred while processing the request."
+    let addTodo todo =
+        if Todo.isValid todo.Description then
+            todos.Add todo
+            Ok()
+        else
+            Error "Invalid todo"
 
-let helloWorld () = async {return "Hello From Saturn!"}
+    do
+        addTodo (Todo.create "Create new SAFE project") |> ignore
+        addTodo (Todo.create "Write your app") |> ignore
+        addTodo (Todo.create "Ship it!!!") |> ignore
 
-let serverApi: IServerApi = {GetValue = helloWorld}
+type TodoDTO = {Description: string}
 
-let routeBuilder (typeName: string) (methodName: string) =
-    $"/api/%s{typeName}/%s{methodName}"
+/// <summary>
+/// Fetches all available todos.
+/// </summary>
+let getTodos: EndpointHandler =
+    let res = Storage.todos |> List.ofSeq
+    json res
 
-let docs = Docs.createFor<IServerApi>()
-let serverApiDocs =
-    Remoting.documentation "Server Api"
-        [
-            docs.route <@ fun (api: IServerApi) -> api.GetValue @>
-            |> docs.alias "Get a Value"
-            |> docs.description "Returns a value set on the backend"
-        ]
+/// <summary>
+/// Creates a new todo.
+/// </summary>
+let addTodo (ctx: HttpContext) =
+    task {
+        let! todo = ctx.BindJson<TodoDTO> ()
+        let newTodo = Todo.create todo.Description
+        match Storage.addTodo newTodo with
+        | Ok () -> return! json newTodo ctx
+        | Error e ->
+            Log.Error "Could not add todo."
+            return! ctx.Write <| TypedResults.Problem e
+    }
+    :> Task
 
-let serverApiHandler: HttpHandler =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder routeBuilder
-    |> Remoting.fromValue serverApi
-    |> Remoting.withErrorHandler fableRemotingErrorHandler
-    |> Remoting.withDocs "/api/docs" serverApiDocs
-    |> Remoting.buildHttpHandler
-
-let webApp =
-    choose [
-        serverApiHandler
-
-        GET >=> routeCi "/api/ping" >=> text "pong"
+let endpoints = [
+    GET [
+        route "/" (text "Hello World!")
+        route Urls.API.Todo.TodosRoot <| getTodos
+        route "/error" <| text "Something went wrong"
     ]
+    POST [route Urls.API.Todo.TodosRoot <| addTodo]
+]
+
+let notFoundHandler (ctx: HttpContext) =
+    Log.Warning "Unhandled 404 error"
+    ctx.SetStatusCode StatusCodes.Status404NotFound
+    ctx.Write <| TypedResults.NotFound {|Error = "Resource was not found"|}
+
+// TODO: Make it handle innerexn with rec
+let errorHandler (ctx: HttpContext) (next: RequestDelegate) =
+    task {
+        try
+            return! next.Invoke ctx
+        with
+        | :? ModelBindException
+        | :? JsonException
+        | :? RouteParseException as ex ->
+            Log.Warning $"Unhandled 400 error %s{ex.Message}"
+            ctx.SetStatusCode StatusCodes.Status400BadRequest
+            return! ctx.Write <| TypedResults.BadRequest {|Error = ex.Message|}
+        | ex ->
+            Log.Error
+                $"An unhandled exception has occurred while executing the request. %s{ex.Message}"
+            ctx.SetStatusCode StatusCodes.Status500InternalServerError
+            return! ctx.WriteText <| string ex
+    }
+    :> Task
 
 // Configure Serilog to write to console at minimum info level, silence microsoft and system related logs
 let configureSerilog () =
-    LoggerConfiguration()
-        .Enrich.FromLogContext()
-        .Destructure.FSharpTypes()
-        .MinimumLevel.Override("Microsoft", Events.LogEventLevel.Warning)
-        .MinimumLevel.Override("System", Events.LogEventLevel.Warning)
-        .MinimumLevel.Override("HealthChecks", Events.LogEventLevel.Warning)
-        .WriteTo.Console()
-        .CreateLogger ()
+    LoggerConfiguration().Enrich.FromLogContext ()
+    |> fun x ->
+        if Settings.containerized then
+            x.MinimumLevel.Information ()
+        else
+            x.MinimumLevel.Debug ()
+    |> fun x ->
+        x.MinimumLevel
+            .Override("Microsoft", Events.LogEventLevel.Warning)
+            .MinimumLevel.Override("System", Events.LogEventLevel.Warning)
+            .MinimumLevel.Override("HealthChecks", Events.LogEventLevel.Warning)
+            .WriteTo.Console()
+            .CreateLogger()
 
+// Configure app
+let configureApp (appBuilder: IApplicationBuilder) =
+    let staticFileOptions = StaticFileOptions()
+    let publicPath' =
+        Path.Combine (Directory.GetCurrentDirectory(), Settings.publicPath)
+    staticFileOptions.FileProvider <- new PhysicalFileProvider (publicPath')
+
+    (match Settings.containerized with
+     | true -> appBuilder.UseDeveloperExceptionPage() |> ignore
+     | false -> appBuilder.UseExceptionHandler("/error", true) |> ignore)
+    appBuilder
+        .UseDefaultFiles()
+        .UseStaticFiles(staticFileOptions)
+        .UseHealthChecks(PathString "/healthz")
+        .UseSerilogRequestLogging()
+        .UseRouting()
+        .Use(errorHandler)
+        .UseOxpecker(endpoints)
+        .UseSwagger() // for generating OpenApi spec
+        .UseSwaggerUI()
+        .UseOpenTelemetryPrometheusScrapingEndpoint()
+        .Run(notFoundHandler)
+
+// Configure services
 let configureServices (services: IServiceCollection) =
+    let jsonFSharpOptions =
+        JsonFSharpOptions
+            .Default()
+            .WithAllowNullFields(true)
+            .WithUnionFieldsName("value")
+            .WithUnionTagNamingPolicy(JsonNamingPolicy.CamelCase)
+            .WithUnionTagCaseInsensitive(true)
+            .WithUnionEncoding(
+                JsonUnionEncoding.ExternalTag
+                ||| JsonUnionEncoding.UnwrapFieldlessTags
+                ||| JsonUnionEncoding.UnwrapSingleFieldCases
+                ||| JsonUnionEncoding.UnwrapSingleCaseUnions
+                ||| JsonUnionEncoding.NamedFields
+            )
+            .WithUnwrapOption(true)
+
+    let jsonOptions = JsonSerializerOptions ()
+    jsonOptions.AllowTrailingCommas <- true
+    jsonOptions.Converters.Add (JsonFSharpConverter(jsonFSharpOptions))
+    jsonOptions.DefaultBufferSize <- 64 * 1024
+    jsonOptions.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingDefault // jsonOptions.IgnoreNullValues is deprecated. This is the new way to say it.
+    jsonOptions.NumberHandling <- JsonNumberHandling.AllowReadingFromString
+    jsonOptions.PropertyNameCaseInsensitive <- true // Case sensitivity is from the 1970's. We should let it go.
+    // jsonOptions.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
+    jsonOptions.ReadCommentHandling <- JsonCommentHandling.Skip
+    jsonOptions.ReferenceHandler <- ReferenceHandler.IgnoreCycles
+    jsonOptions.UnknownTypeHandling <- JsonUnknownTypeHandling.JsonElement
+    jsonOptions.WriteIndented <- true
+    jsonOptions.MaxDepth <- 16 // Default is 64, but if we exceed a depth of 16, we're probably doing something wrong.
+    jsonOptions.PropertyNameCaseInsensitive <- true
+
+    let openApiInfo = OpenApiInfo()
+    openApiInfo.Description <- "A simple Todo App to Demo Swagger with F#"
+    openApiInfo.Title <- "Todo Server API"
+    openApiInfo.Version <- "v1"
+    openApiInfo.Contact <- OpenApiContact()
+    openApiInfo.Contact.Name <- "Joe Developer"
+    openApiInfo.Contact.Email <- "joe.developer@tempuri.org"
+    openApiInfo.License <- OpenApiLicense()
+    openApiInfo.License.Name <- "MIT"
+    openApiInfo.License.Url <- Uri("https://opensource.org/license/MIT")
+
+    let meterProvider =
+        Sdk
+            .CreateMeterProviderBuilder()
+            .AddPrometheusExporter()
+            .AddMeter(
+                [|
+                    "System.Runtime"
+                    "Microsoft.AspNetCore.Hosting"
+                    "Microsoft.AspNetCore.Server.Kestrel"
+                |]
+            )
+            .Build()
+
+    services.AddRouting() |> ignore
+    services.AddOxpecker() |> ignore
+    services.AddEndpointsApiExplorer() |> ignore // use the API Explorer to discover and describe endpoints
+    services.AddSwaggerGen(fun opt ->
+        opt.SwaggerDoc ("v1", openApiInfo)
+        // TODO: Does not work
+        let xmlPath = Path.Combine(AppContext.BaseDirectory, "Server.xml")
+        opt.IncludeXmlComments(xmlPath)
+    )
+    |> ignore // swagger dependencies
+    services.AddSingleton(meterProvider) |> ignore
+    services.AddSingleton<Serializers.IJsonSerializer>(ThothSerializer())
+    |> ignore
+    services.AddMetrics() |> ignore
     services.AddHealthChecks () |> ignore
+    services.AddLogging() |> ignore
+    services.AddSerilog() |> ignore
 
-let configureApp (app: IApplicationBuilder) =
-    app.UseHealthChecks (PathString "/health")
-
-let configureLogger (logger: ILoggingBuilder) =
-    logger
-        .SetMinimumLevel(LogLevel.Debug)
+// Configure logging
+let configureLogging (builder: ILoggingBuilder) =
+    builder
+        .Configure(fun opt ->
+            opt.ActivityTrackingOptions <-
+                ActivityTrackingOptions.SpanId
+                ||| ActivityTrackingOptions.ParentId
+                ||| ActivityTrackingOptions.TraceId
+                ||| ActivityTrackingOptions.Baggage
+                ||| ActivityTrackingOptions.Tags
+        )
+        .SetMinimumLevel(
+            if not Settings.containerized then
+                LogLevel.Debug
+            else
+                LogLevel.Warning
+        )
         .AddFilter("Microsoft", LogLevel.Warning)
         .AddFilter("System", LogLevel.Warning)
-        .AddSerilog ()
+        .AddSerilog()
     |> ignore
 
-let configureHost (host: IHostBuilder) =
-    host.ConfigureServices (configureServices)
-
-let app ipPort =
-    application {
-        url ipPort
-        use_router webApp
-        memory_cache
-        use_static "public"
-        use_json_serializer (Thoth.Json.Giraffe.ThothSerializer ())
-        use_gzip
-
-        app_config configureApp
-        host_config configureHost
-        logging configureLogger
-    }
-
 [<EntryPoint>]
-let main _ =
+let main args =
     Log.Logger <- configureSerilog ()
-
     Log.Information "-----------------------------------------"
-    Log.Information $"Port: {Settings.port}"
+    Log.Information $"Containerized: %A{Settings.containerized}"
+    Log.Information $"Settings: %A{Settings.appsettings.Setting}"
     Log.Information "-----------------------------------------"
 
-    let ipPort = $"http://0.0.0.0:{Settings.port}/"
-    run (app ipPort)
+    let ipPort = $"http://0.0.0.0:%i{Settings.port}/"
+
+    // The max size of Content-Length request header that will be accepted
+    let maxRequestBodySize = Int64.MaxValue
+
+    WebHost
+        .CreateDefaultBuilder(args)
+        .Configure(Action<IApplicationBuilder> configureApp)
+        .ConfigureServices(configureServices)
+        .UseWebRoot(Settings.publicPath)
+        .ConfigureKestrel(fun kestrelOptions ->
+            kestrelOptions.Limits.MaxRequestBodySize <- maxRequestBodySize
+        )
+        .ConfigureLogging(configureLogging)
+        .UseUrls(ipPort)
+        .Build()
+        .Run()
+
     0

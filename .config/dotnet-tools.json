@@ -3,21 +3,27 @@
   "isRoot": true,
   "tools": {
     "fable": {
-      "version": "4.2.1",
+      "version": "4.16.0",
       "commands": [
         "fable"
       ]
     },
     "fantomas": {
-      "version": "6.2.1",
+      "version": "6.3.0",
       "commands": [
         "fantomas"
       ]
     },
     "telplin": {
-      "version": "8.0.1",
+      "version": "0.9.6",
       "commands": [
         "telplin"
+      ]
+    },
+    "fsharp-analyzers": {
+      "version": "0.25.0",
+      "commands": [
+        "fsharp-analyzers"
       ]
     }
   }

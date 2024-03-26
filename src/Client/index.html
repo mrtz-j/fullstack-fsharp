@@ -1,13 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <title>Fullstack Template</title>
   <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" href="./public/fable.ico" />
+  <link rel="shortcut icon" href="./fable.ico" />
 </head>
-<body>
-<div id="root"></div>
-<script type="module" src="./.build/App.js"></script>
+<body style="margin: 0">
+  <div id="root"></div>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <script type="module">
+    import "/App.fs";
+  </script>
 </body>
+
 </html>

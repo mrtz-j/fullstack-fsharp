@@ -1,18 +1,15 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine
-
-ENV PNPM_VERSION "8.6.6"
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine
 
 # Install node, 7zip, git, curl, bash and process tools
-RUN apk add --no-cache git nodejs p7zip procps libgdiplus curl bash coreutils
+RUN apk add --no-cache git p7zip procps libgdiplus curl bash coreutils jq
 
-RUN set -eux; \
-  curl -fsSL "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linuxstatic-x64" -o /bin/pnpm; \
-  chmod +x /bin/pnpm;
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
 
 # Trouble brewing
 RUN rm /etc/ssl/openssl.cnf
 
-# Add dotnet tools to path to pick up fake and paket installation
+# add dotnet tools to path to pick up fake and paket installation
 ENV PATH="/root/.dotnet/tools:${PATH}"
 
 # Copy endpoint specific user settings into container to specify

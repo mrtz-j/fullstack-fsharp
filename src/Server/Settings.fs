@@ -1,23 +1,66 @@
 module Settings
 
 open System.IO
-open Thoth.Json.Net
+open System.Text.Json.Serialization
+open System.Text.Json
 
 type Settings = {Setting: string}
 
 let tryGetEnv =
     System.Environment.GetEnvironmentVariable
     >> function
-        | null
-        | "" -> None
+        | null -> None
+        | x when x.Length = 0 -> None
         | x -> Some x
+
+type DeployEnvironment =
+    | Production
+    | Demo
+    | Staging
+    | Dev
+
+    override this.ToString () =
+        match this with
+        | Production -> "production"
+        | Demo -> "demo"
+        | Staging -> "staging"
+        | Dev -> "development"
+
+let Environment =
+    "DEPLOY_ENV"
+    |> tryGetEnv
+    |> function
+        | None ->
+            printfn "No DEPLOY_ENV. Defaulting to dev."
+            Dev
+        | Some e ->
+            match e.Trim().ToLower () with
+            | "prod"
+            | "production"
+            | "p" -> Production
+            | "demo" -> Demo
+            | "staging"
+            | "s" -> Staging
+            | "dev"
+            | "review"
+            | "test" -> Dev
+            | _ ->
+                printfn $"Could not parse DEPLOY_ENV %s{e}. Defaulting to Dev."
+                Dev
 
 let appsettings =
     let settings = File.ReadAllText "appsettings.json"
+    let options = JsonFSharpOptions.ThothLike().ToJsonSerializerOptions ()
 
-    match Decode.Auto.fromString<Settings> settings with
-    | Ok s -> s
-    | Error e -> failwith e
+    JsonSerializer.Deserialize<Settings> (settings, options)
+
+// Running in K8s
+let containerized =
+    "DOTNET_RUNNING_IN_CONTAINER"
+    |> tryGetEnv
+    |> function
+        | Some _ -> true
+        | _ -> false
 
 // Server home
 let contentRoot =
@@ -34,16 +77,20 @@ let webRoot =
         | None -> Path.Join [|contentRoot; "public"|]
 
 let port =
-    "SERVER_PORT"
-    |> tryGetEnv
-    |> Option.map uint16
-    |> Option.defaultValue 8085us
+    "SERVER_PORT" |> tryGetEnv |> Option.map uint16 |> Option.defaultValue 8085us
 
 let useSSL =
     "SERVER_USE_HTTPS"
     |> tryGetEnv
     |> Option.map (int >> (<) 0)
     |> Option.defaultValue false
+
+let publicPath =
+    Environment = DeployEnvironment.Dev
+    |> function
+        | true -> "./public"
+        | _ -> "../../dist/public"
+    |> Path.GetFullPath
 
 let listenAddress =
     if useSSL then

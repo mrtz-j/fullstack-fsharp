@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import { resolve } from 'path';
+import fable from "vite-plugin-fable";
 import { dependencies } from './package.json';
 
 const vendorDeps = ['react', 'react-dom']
@@ -8,7 +8,7 @@ const vendorDeps = ['react', 'react-dom']
 const chunksFromDeps = (deps, vendorDeps) => {
   const chunks = {}
   Object.keys(deps).forEach((key) => {
-    if (vendorDeps.includes(key) || key.startsWith('@fluetnui')) {
+    if (vendorDeps.includes(key)) {
       return
     }
     chunks[key] = [key]
@@ -20,48 +20,48 @@ const serverPort = 8085
 const clientPort = 8080
 
 const proxy = {
-  target: `http://127.0.0.1:${serverPort}/`,
+  target: `http://localhost:${serverPort}/`,
   changeOrigin: false,
   secure: false,
   ws: true
 }
 
+/** @type {import('vite').UserConfig} */
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+      fable(),
+      react({include: /\.fs$/, jsxRuntime: "classic"}),
+  ],
   root: ".",
-  clearScreen: false,
   publicDir: "./src/Client/public",
   build: {
-    outDir: resolve(__dirname, "./dist/public"),
+    outDir: "../../dist/public",
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, "./src/Client/index.html")
-      },
       output: {
         manualChunks: {
           vendor: vendorDeps,
           ...chunksFromDeps(dependencies, vendorDeps)
         },
-        entryFileNames: 'js/[name].js',
-        chunkFileNames: 'js/[name].chunk.js',
-        assetFileNames: '[ext]/[name].[ext]'
+        entryFileNames: 'js/[name][hash].js',
+        chunkFileNames: 'js/[name][hash].chunk.js',
+        assetFileNames: '[ext]/[name][hash].[ext]'
       },
     }
   },
   server: {
-    watch: {
-      ignored: [
-        "**/*.fs" // Don't watch F# files
-      ]
-    },
     host: '0.0.0.0',
     port: clientPort,
-    https: false,
-    cors: false,
+    strictPort: true,
     proxy: {
-      '/api': proxy,
+        '/api': proxy,
+    },
+    watch: {
+        ignored: [
+            "bin",
+            "obj",
+        ],
     }
   }
 });

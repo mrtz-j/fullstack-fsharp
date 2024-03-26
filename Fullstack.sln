@@ -1,6 +1,4 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Build", "Build.fsproj", "{88EF5C33-5724-41DE-8FF4-ADE126BD019B}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Client", "src\Client\Client.fsproj", "{BEC2E2EA-A960-4888-916B-1D9FE789DFE3}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Server", "src\Server\Server.fsproj", "{0931D008-7D49-446B-BF25-7D47CE4D60CF}"
@@ -11,10 +9,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{88EF5C33-5724-41DE-8FF4-ADE126BD019B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88EF5C33-5724-41DE-8FF4-ADE126BD019B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88EF5C33-5724-41DE-8FF4-ADE126BD019B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88EF5C33-5724-41DE-8FF4-ADE126BD019B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEC2E2EA-A960-4888-916B-1D9FE789DFE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BEC2E2EA-A960-4888-916B-1D9FE789DFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEC2E2EA-A960-4888-916B-1D9FE789DFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU

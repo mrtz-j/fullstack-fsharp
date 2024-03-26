@@ -1,0 +1,40 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup>
+        <!--  Common  -->
+        <PackageVersion Include="Fsharp.Core" Version="8.0.201" />
+        <PackageVersion Include="FSharpPlus" Version="1.6.1" />
+        <!--  Client  -->
+        <PackageVersion Include="Fable.Core" Version="4.3.0" />
+        <PackageVersion Include="Fable.Remoting.Client" Version="7.32.0" />
+        <PackageVersion Include="Feliz" Version="2.7.0" />
+        <PackageVersion Include="Feliz.PigeonMaps" Version="3.0.0" />
+        <PackageVersion Include="Feliz.Router" Version="4.0.0" />
+        <PackageVersion Include="FS.FluentUI" Version="1.11.0" />
+        <PackageVersion Include="Feliz.UseMediaQuery" Version="1.5.0" />
+        <PackageVersion Include="Fable.React" Version="9.3.0" />
+        <!--  Server  -->
+        <PackageVersion Include="FsHttp" Version="14.5.0" />
+        <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3" />
+        <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.3" />
+        <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
+        <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.8.0-beta.1" />
+        <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.0-beta.1" />
+        <PackageVersion Include="Oxpecker" Version="0.9.0" />
+        <PackageVersion Include="Oxpecker.OpenApi" Version="0.1.0" />
+        <PackageVersion Include="DotSwashbuckle.AspNetCore" Version="3.0.8" />
+        <PackageVersion Include="FSharp.SystemTextJson" Version="1.2.42" />
+        <PackageVersion Include="Serilog" Version="3.1.1" />
+        <PackageVersion Include="Serilog.AspNetCore" Version="8.0.0" />
+        <!-- Build -->
+        <PackageVersion Include="Fake.IO.FileSystem" Version="6.0.0" />
+        <PackageVersion Include="Fun.Build" Version="1.1.2" />
+        <!--  Analyzers  -->
+        <PackageVersion Include="FSharp.Analyzers.Build" Version="0.3.0" />
+        <PackageVersion Include="G-Research.FSharp.Analyzers" Version="0.9.3" />
+        <PackageVersion Include="Ionide.Analyzers" Version="0.9.0" />
+        <PackageVersion Include="Thoth.Json.Net" Version="11.0.0" />
+    </ItemGroup>
+</Project>

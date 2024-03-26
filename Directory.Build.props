@@ -1,0 +1,33 @@
+<Project>
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <!--
+        FS0025: Incomplete pattern matches on this expression.
+        FS1182	Unused variables
+        FS1178 does not support structural equality
+        -->
+<!--        <WarningsAsErrors>FS0025;FS1182</WarningsAsErrors>-->
+<!--        <WarnOn>1182;3390;1178;$(WarnOn)</WarnOn>-->
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <!-- https://www.gresearch.co.uk/blog/article/improve-nuget-restores-with-static-graph-evaluation/ -->
+        <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <ServerGarbageCollection>true</ServerGarbageCollection>
+        <OtherFlags>$(OtherFlags) --test:GraphBasedChecking --test:ParallelOptimization --test:ParallelIlxGen --strict-indentation+</OtherFlags>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="FSharp.Analyzers.Build" PrivateAssets="All">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>build</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="G-Research.FSharp.Analyzers">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Ionide.Analyzers">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+</Project>
