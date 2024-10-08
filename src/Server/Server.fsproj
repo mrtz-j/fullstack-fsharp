@@ -20,7 +20,7 @@
       <Compile Include="Server.fs" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="FSharpPlus" Version="1.4.1" />
+      <PackageReference Include="FSharpPlus" Version="1.6.1" />
       <PackageReference Include="Giraffe" Version="6.2.0" />
       <PackageReference Include="Giraffe.SerilogExtensions" Version="2.2.0" />
       <PackageReference Include="Saturn" Version="0.16.1" />
