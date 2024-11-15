@@ -6,7 +6,7 @@
     "@fluentui/react-components": "^9.34.1",
     "@fluentui/react-datepicker-compat": "^0.3.18",
     "@fluentui/react-icons": "^2.0.219",
-    "@fluentui/react-search-preview": "^0.1.24",
+    "@fluentui/react-search-preview": "^0.2.0",
     "@fluentui/react-tags-preview": "^0.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
